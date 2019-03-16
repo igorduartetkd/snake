@@ -14,7 +14,7 @@ from random import randint
 class play():
     def __init__(self):
 
-        self.lado_quadrado = 15
+        self.lado_quadrado = 20
         self.tam_tela_pixel = [900, 600]
         self.tam_tela = [int(self.tam_tela_pixel[0] / self.lado_quadrado),
                          int(self.tam_tela_pixel[1] / self.lado_quadrado)]
@@ -26,6 +26,9 @@ class play():
         self.mudanca_orientacao = 0
         self.sortear_comida()
         self.score = 0
+        self.score_maximo = 0
+        self.cheat = 0
+
 
     def init(self):
         x, y = self.tam_tela_pixel
@@ -55,7 +58,6 @@ class play():
             time.sleep(1 / self.taxa_atualizacao)
 
         if self.tela_habilitada == 3: # tela final game over
-            self.reinicializar_jogo()
             self.desenhar_tela_fim()
 
         glFlush()
@@ -81,6 +83,10 @@ class play():
         glColor(1.0, 1.0, 1.0)
         self.desenhar_retangulo(round(x * 0.45), round(y * 0.4), round(x * 0.6), round(y * 0.45))
         self.desenhar_texto("RESTART", round(x * 0.465), round(y * 0.41))
+        glColor(0.0, 1.0, 1.0)
+        self.desenhar_texto("Your score  " + str(self.score), x * 0.02, y*0.9)
+        glColor(0.0, 1.0, 0.0)
+        self.desenhar_texto("Max. score  " + str(self.score_maximo), x * 0.02, y * 0.86)
 
     def regras_jogo(self):
         self.cobra.set_orientacao(self.mudanca_orientacao)
@@ -104,8 +110,10 @@ class play():
             self.cobra.engordar(self.comida.get_posicao())
             self.sortear_comida()
             self.score += 10
+            if self.score > self.score_maximo:
+                self.score_maximo = self.score
 
-        self.taxa_atualizacao = 5 + self.score / 50
+        self.taxa_atualizacao = self.cheat + 5 + self.score / 50
 
     def reinicializar_jogo(self):
         del self.cobra
@@ -114,6 +122,7 @@ class play():
         self.score = 0
         self.mudanca_orientacao = 0
         self.taxa_atualizacao = 1
+        self.cheat = 0
 
     def desenhar_muro(self):
         tijolos = self.muro.get_tijolos()
@@ -190,6 +199,7 @@ class play():
                     glutPostRedisplay()
 
                 elif self.tela_habilitada == 3:
+                    self.reinicializar_jogo()
                     self.tela_habilitada = 2
                     glutPostRedisplay()
 
@@ -206,7 +216,8 @@ class play():
         if key == GLUT_KEY_DOWN:    # seta baxo
             if self.cobra.get_orientacao() != 90:
                 self.mudanca_orientacao = 270
-
+        if key==GLUT_KEY_HOME:
+            self.cheat += 5
 
 if __name__ == '__main__':
     
