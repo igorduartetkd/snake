@@ -48,17 +48,17 @@ class play():
     def clock(self):
         glClear(GL_COLOR_BUFFER_BIT)
 
-        if self.tela_habilitada == 1: # tela de inicio
+        if self.tela_habilitada == 1:       # tela de inicio
             self.desenhar_tela_inicio()
-
-        if self.tela_habilitada == 2: # tela do jogo
+        elif self.tela_habilitada == 2:     # tela do jogo
             self.regras_jogo()
             self.desenhar_tela_jogo()
             glutPostRedisplay()
             time.sleep(1 / self.taxa_atualizacao)
-
-        if self.tela_habilitada == 3: # tela final game over
+        elif self.tela_habilitada == 3:     # tela final game over
             self.desenhar_tela_fim()
+        elif self.tela_habilitada == 4:     # tela de pause
+            self.desenhar_tela_pause()
 
         glFlush()
 
@@ -74,6 +74,7 @@ class play():
         self.desenhar_muro()
         self.desenhar_comida()
         self.desenhar_cobra()
+        glColor(0.0, 1.0, 1.0)
         self.desenhar_texto(str(self.score), x*0.9, y*0.9)
 
     def desenhar_tela_fim(self):
@@ -87,6 +88,12 @@ class play():
         self.desenhar_texto("Your score  " + str(self.score), x * 0.02, y*0.9)
         glColor(0.0, 1.0, 0.0)
         self.desenhar_texto("Max. score  " + str(self.score_maximo), x * 0.02, y * 0.86)
+
+    def desenhar_tela_pause(self):
+        x, y = self.tam_tela_pixel
+        self.desenhar_tela_jogo()
+        glColor(1.0, 1.0, 0.0)
+        self.desenhar_texto("PAUSE", round(x * 0.465), round(y * 0.41))
 
     def regras_jogo(self):
         self.cobra.set_orientacao(self.mudanca_orientacao)
@@ -152,7 +159,7 @@ class play():
         tentar_novamente = True
         while(tentar_novamente):
             tentar_novamente = False
-            xr = randint(1, self.tam_tela[0]-2)
+            xr = randint(1, self.tam_tela[0] - 2)
             yr = randint(1, self.tam_tela[1] - 2)
             for gomo in corpo:
                 if gomo.get_posicao() == [xr, yr]:
@@ -204,20 +211,44 @@ class play():
                     glutPostRedisplay()
 
     def keyboard_especiais(self, key,  x,  y):
-        if key == GLUT_KEY_LEFT:    # seta esquerda
-            if self.cobra.get_orientacao() != 0:
-                self.mudanca_orientacao = 180
-        if key == GLUT_KEY_RIGHT:   #seta direita
-            if self.cobra.get_orientacao() != 180:
-                self.mudanca_orientacao = 0
-        if key == GLUT_KEY_UP:      # seta cima
-            if self.cobra.get_orientacao() != 270:
-                self.mudanca_orientacao = 90
-        if key == GLUT_KEY_DOWN:    # seta baxo
-            if self.cobra.get_orientacao() != 90:
-                self.mudanca_orientacao = 270
-        if key==GLUT_KEY_HOME:
-            self.cheat += 5
+        if self.tela_habilitada == 2:
+            if key == GLUT_KEY_LEFT:    # seta esquerda
+                if self.cobra.get_orientacao() != 0:
+                    self.mudanca_orientacao = 180
+            elif key == GLUT_KEY_RIGHT:   #seta direita
+                if self.cobra.get_orientacao() != 180:
+                    self.mudanca_orientacao = 0
+            elif key == GLUT_KEY_UP:      # seta cima
+                if self.cobra.get_orientacao() != 270:
+                    self.mudanca_orientacao = 90
+            elif key == GLUT_KEY_DOWN:    # seta baxo
+                if self.cobra.get_orientacao() != 90:
+                    self.mudanca_orientacao = 270
+
+        if key == GLUT_KEY_PAGE_UP:
+            self.cheat += 1
+        elif key == GLUT_KEY_PAGE_DOWN:
+            if self.cheat > -4:
+                self.cheat -= 1
+
+    def keyboard(self, key, x, y):
+        if ord(key) == 27:   # esc
+            exit(0);
+        elif ord(key) == 32: # space
+            if self.tela_habilitada == 2:
+                self.tela_habilitada = 4
+                glutPostRedisplay()
+            elif self.tela_habilitada == 4:
+                self.tela_habilitada = 2
+                glutPostRedisplay()
+            elif self.tela_habilitada == 1:
+                self.tela_habilitada = 2
+                glutPostRedisplay()
+            elif self.tela_habilitada == 3:
+                self.reinicializar_jogo()
+                self.tela_habilitada = 2
+                glutPostRedisplay()
+
 
 if __name__ == '__main__':
     
@@ -226,5 +257,6 @@ if __name__ == '__main__':
     game.init()
     glutDisplayFunc(game.clock)
     glutMouseFunc(game.mouse_inicio)
+    glutKeyboardFunc(game.keyboard)
     glutSpecialFunc(game.keyboard_especiais)
     glutMainLoop()
