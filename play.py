@@ -51,8 +51,8 @@ class play():
         if self.tela_habilitada == 1:       # tela de inicio
             self.desenhar_tela_inicio()
         elif self.tela_habilitada == 2:     # tela do jogo
-            self.regras_jogo()
-            self.desenhar_tela_jogo()
+            if self.regras_jogo() == 0:
+                self.desenhar_tela_jogo()
             glutPostRedisplay()
             time.sleep(1 / self.taxa_atualizacao)
         elif self.tela_habilitada == 3:     # tela final game over
@@ -97,20 +97,22 @@ class play():
 
     def regras_jogo(self):
         self.cobra.set_orientacao(self.mudanca_orientacao)
-        self.cobra.deslocar()
-
-        cabeca = self.cobra.get_cabeca()
-        corpo = self.cobra.get_corpo()
+        cabeca = self.cobra.get_cabeca_futuro()
         posicao_cabeca = cabeca.get_posicao()
-
+        corpo = self.cobra.get_corpo()
+        
         # testando colisao com o proprio corpo
-        for gomo in corpo[:-1]:
+        for gomo in corpo[:]:
             if gomo.get_posicao() == posicao_cabeca: # colidiu com o proprio corpo
                 self.tela_habilitada = 3
+                return 1
+
+        self.cobra.deslocar()
 
         # testando colisao com o muro
         if self.muro.checar_colisao(posicao_cabeca):
             self.tela_habilitada = 3
+            return 1
 
         # testando se comeu algo
         if self.comida.get_posicao() == posicao_cabeca:
@@ -119,8 +121,10 @@ class play():
             self.score += 10
             if self.score > self.score_maximo:
                 self.score_maximo = self.score
+        
 
         self.taxa_atualizacao = self.cheat + 5 + self.score / 50
+        return 0
 
     def reinicializar_jogo(self):
         del self.cobra
