@@ -7,6 +7,9 @@
 	1- Abra o terminal ou prompt de comandos no diretório raiz do jogo;
 	2- Execute, com o python, o programa “play.py”. Exemplo: python3 play.py
 
+	Jogabilidade:
+	A cobra é movimentada pelas setas do teclado. A tecla de espaço coloca e retira o pause no jogo. Caso o jogador está na primeira tela, de apresentação, ou na tela de game over, a tecla espaço simboliza o clique no botão start ou restart que aparece na tela. A tecla ESC sai do jogo imediatamente quando pressionada.
+
 	O jogo snake foi desenvolvido em python versão 3.5 utilizando os recursos da biblioteca PyOpenGL. O desenvolvimento foi orientado a objeto de acordo com o diagrama de classe desenvolvido com o nome “diagramaClasseSnake.pdf”.
 O objeto Elemento foi criado para servir como estrutura elementar para a construção da cobra, do muro e da comida armazenando a cor, a posição, o lado do quadrado e a direção que está apontado para ser utilizado quando houver movimento.
 	A classe Cobra armazena uma lista com os elementos que representam os gomos do corpo da cobra. A variável “comeu” é uma booleana apenas para indicar se a cobra comeu alguma comida no ciclo anterior. 
