@@ -1,6 +1,6 @@
 	Pré-requisitos para executar o jogo:
 
-	- Python versão igual ou superior a 3.5
+	- Python versão >= 3.5
 	- PyOpenGL
 
 	Passos para executá-lo:
